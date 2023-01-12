@@ -1,7 +1,7 @@
 import pyrebase
 from aiogram import Bot, Dispatcher, executor, types
 
-API_TOKEN = '2109667277:AAF7H179Zj9baAIMwH2PZDstwFXx3Ky0oSk'
+API_TOKEN = '5976543252:AAEQJVjJA0qVnXNUecMs_nIzd1RcuXbBySM'
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
@@ -49,7 +49,6 @@ async def startFun(message:types.Message):
 
 admin_butttons=[
     ['➕Yangi Mahsulot Qoshish➕'],
-    ["📝Mahsulotni O'zgartirish📝"],
     ["⚙️Mahsulotlar Ro'yxati⚙️"],
     ["◀️Admin Paneldan Chiqish🚪"]
 ]
@@ -115,6 +114,7 @@ async def listener(message:types.Message):
     if text in p_name_ctg:
         thisDB=db.child(btns_array[0][0]).child(text).child('All').get().val()
         thisDB=list(thisDB)
+        keyboard_product = types.ReplyKeyboardMarkup(product_btn,resize_keyboard=True,one_time_keyboard=True,input_field_placeholder='Wait . . .')
         for k in range(0,len(thisDB)):
             getDB=db.child(btns_array[0][0]).child(text).child('All').child(thisDB[k]).get().val()
             product_types=list(getDB)
@@ -138,6 +138,9 @@ async def listener(message:types.Message):
                 f"\n\n"
                 f"Narxi: {str(cost)+str(pb)}"
             )
+        await message.answer("Bizda Bor Mahsulotlar Shular edi. 👆",
+                reply_markup=keyboard_product
+        )
     keyboard_product_admin=''
     if text=='➕Yangi Mahsulot Qoshish➕':
         products=db.child('Mahsulotlar').get().val().keys()
@@ -251,7 +254,7 @@ async def listener(message:types.Message):
     if text=="⚙️Mahsulotlar Ro'yxati⚙️":
         reply_text=''
         products_all_root=list(db.child("Mahsulotlar").get().val().keys())
-        keyboard_product_admin = types.ReplyKeyboardMarkup(admin_new_p_catg,resize_keyboard=True,one_time_keyboard=True)
+        adminKeyboard=types.ReplyKeyboardMarkup(admin_butttons,resize_keyboard=True,one_time_keyboard=True)
         for i in range(0,len(products_all_root)):
             products_all_root_inside=list(db.child("Mahsulotlar").child(products_all_root[i]).child("All").get().val().keys())
             await message.answer(
@@ -268,9 +271,10 @@ async def listener(message:types.Message):
                     f'Nomi: {pname}\n'
                     f"Malumot: {pinfo}\n"
                     f"Narxi: {pcost}{ppb}",
-                    reply_markup=keyboard_product_admin
                 )
-
+        await message.answer("Barcha Mahsulotlar Shular Edi 👆 ",
+                    reply_markup=adminKeyboard
+        )
     if text=="◀️Admin Paneldan Chiqish🚪":
         keyboard=types.ReplyKeyboardMarkup(btns_array,resize_keyboard=True,one_time_keyboard=True)
         await message.answer(
@@ -291,7 +295,6 @@ async def listener(message:types.Message):
             "🏪Telegram: @uzb_aliyev",
             reply_markup=keyboard
             )
-    
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=False)
